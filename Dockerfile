@@ -1,19 +1,26 @@
 # Use official Python base image
 FROM python:3.11-slim
 
-# Set working directory
+ENV PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+# System packages: tesseract for pytesseract
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    tesseract-ocr \
+    && rm -rf /var/lib/apt/lists/*
+
+# Workdir
 WORKDIR /app
 
-# Install dependencies first (better caching)
+# Install Python dependencies first (better layer caching)
 COPY requirements.txt .
-
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the application code
+# Copy the app
 COPY . .
 
-# Expose port (adjust if your app uses a different one)
+# Expose service port
 EXPOSE 5000
 
-# Run the app
-CMD ["python", "index.py"]
+# Use uvicorn to serve FastAPI app (index:app)
+CMD ["uvicorn", "index:app", "--host", "0.0.0.0", "--port", "5000"]
