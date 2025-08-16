@@ -1,4 +1,3 @@
-
 version: "3.9"
 
 services:
@@ -7,4 +6,15 @@ services:
     container_name: python-service3
     ports:
       - "5000:5000"
-    restart: always
+    environment:
+      # Provide your token at runtime (or via Jenkins/host env)
+      # Remove the value here and pass it with: export PPLX_API_KEY=... ; docker compose up -d
+      PPLX_API_KEY: "${PPLX_API_KEY:-}"
+    volumes:
+      - ./public:/app/public
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health/"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
