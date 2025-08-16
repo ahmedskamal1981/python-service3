@@ -139,7 +139,7 @@ async def health_check():
 
 if __name__ == "__main__":
     import os
-    port = int(os.environ.get("PORT", 8010))
+    port = int(os.environ.get("PORT", 5000))
     uvicorn.run(
         "YOURFILENAME:app",   # Replace YOURFILENAME with this script’s name without .py
         host="0.0.0.0",
